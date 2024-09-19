@@ -14,15 +14,25 @@ export class LocationService {
 
   async create(createLocationInput: CreateLocationInput): Promise<Location> {
     const location = this.locationRepo.create(createLocationInput);
-    return this.locationRepo.save(location);
+
+    await this.locationRepo.save(location);
+    
+    location.events = [];
+    
+    return location;
   }
 
   async findAll() {
-    return await this.locationRepo.find();
+    const locations = await this.locationRepo.find({ relations: ['events'] })
+
+    return locations.map(location => ({
+    ...location,
+    events: location.events || []
+  }))
   }
 
   async findOne(id: number) {
-    const location = await this.locationRepo.findOneBy({ id });
+    const location = await this.locationRepo.findOne({where: {id}, relations: ['events']});
 
     if (!location) {
       throw new NotFoundException(`Location with ID ${id} not found`);
@@ -34,7 +44,7 @@ export class LocationService {
   async update(id: number, updateLocationInput: UpdateLocationInput) {
     delete updateLocationInput['id'];
 
-    const findOne = await this.locationRepo.findOneBy({ id });
+    const findOne = await this.locationRepo.findOne({ where: {id}, relations: ["events"] });
 
     const findData: Location = findOne;
 
@@ -46,7 +56,7 @@ export class LocationService {
   }
 
   async remove(id: number) {
-    const location = await this.locationRepo.findOneBy({ id });
+    const location = await this.locationRepo.findOne({ where: {id}, relations: ["events"] });
 
     if (!location) throw new NotFoundException('location not Found');
 

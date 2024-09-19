@@ -20,7 +20,7 @@ scalar DateTime
 type Location {
   id: Int!
   name: String!
-  events: [Event!]!
+  events: [Event]!
 }
 
 type Query {
