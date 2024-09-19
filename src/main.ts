@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import * as basicAuth from 'express-basic-auth';
 
 import { AppModule } from './app.module';
 import { config } from './common/config';
@@ -8,6 +9,13 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.use(
+    '/api/docs*',
+    basicAuth({
+    challenge: true,
+    users: {admin: '1234'}
+   }),
+  );
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

@@ -1,9 +1,9 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { IsAlpha, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 @InputType()
 export class CreateLocationInput {
-  @IsAlpha()
+  @IsString()
   @IsNotEmpty()
   @Field()
   name: string;
